@@ -1,9 +1,11 @@
-package dev.java10x.CadastroDeNinjas.Ninja;
+package dev.java10x.CadastroDeNinjas.ninjas;
 
+import dev.java10x.CadastroDeNinjas.missoes.MissaoModel;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "tb_ninja")
+@Table(name = "ninja")
 public class NinjaModel {
 
     @Id
@@ -13,6 +15,11 @@ public class NinjaModel {
     private String email;
     private int idade;
 
+    // Um ninja tem uma Missão
+    @ManyToOne
+    @JoinColumn(name = "missao_id")
+    private MissaoModel missao;
+
     public NinjaModel() {
     }
 
@@ -21,6 +28,14 @@ public class NinjaModel {
         this.email = email;
         this.nome = nome;
         this.id = id;
+    }
+
+    public NinjaModel(Long id, String nome, String email, int idade, MissaoModel missao) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.idade = idade;
+        this.missao = missao;
     }
 
     public Long getId() {
@@ -53,5 +68,13 @@ public class NinjaModel {
 
     public void setIdade(int idade) {
         this.idade = idade;
+    }
+
+    public MissaoModel getMissao() {
+        return missao;
+    }
+
+    public void setMissao(MissaoModel missao) {
+        this.missao = missao;
     }
 }
