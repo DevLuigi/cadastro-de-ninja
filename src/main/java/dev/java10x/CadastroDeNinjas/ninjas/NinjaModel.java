@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NinjaModel {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
     private int idade;
+    private String nome;
+    private String rank;
 
     @Column(unique = true)
     private String email;
@@ -26,5 +26,4 @@ public class NinjaModel {
     @ManyToOne
     @JoinColumn(name = "missao_id")
     private MissaoModel missao;
-
 }
