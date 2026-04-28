@@ -20,6 +20,7 @@ public class MissaoModel {
     private Long id;
     private String descricao;
     private String dificuldade;
+    private String location;
 
     // Uma missão tem vários ninjas
     @OneToMany(mappedBy = "missao")
