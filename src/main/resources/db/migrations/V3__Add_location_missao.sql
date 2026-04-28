@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE missao ADD location VARCHAR(255);
+COMMIT;
