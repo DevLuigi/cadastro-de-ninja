@@ -57,6 +57,7 @@ O sistema foi criado para gerenciar **ninjas** e **missões**, com as seguintes 
 * `id`
 * `titulo`
 * `descricao`
+* `localização`
 
 ### 🔗 Relacionamento
 
