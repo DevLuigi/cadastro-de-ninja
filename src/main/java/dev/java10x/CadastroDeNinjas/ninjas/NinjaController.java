@@ -15,11 +15,6 @@ public class NinjaController {
         this.ninjaService = ninjaService;
     }
 
-    @GetMapping("/helloWorld")
-    public String HelloWorld() {
-        return "Hello world";
-    }
-
     @GetMapping("/listarTodos")
     public List<NinjaModel> listarTodos() {
         return ninjaService.listarTodos();
@@ -31,18 +26,18 @@ public class NinjaController {
     }
 
     @PostMapping("/salvar")
-    public String salvar() {
-        return "Salva o ninja";
+    public NinjaModel salvar(@RequestBody NinjaModel ninja) {
+        return ninjaService.salvar(ninja);
     }
 
-    @PutMapping("/alterar")
-    public String alterar() {
-        return "Altera o ninja";
+    @PutMapping("/alterar/{id}")
+    public NinjaModel alterar(@PathVariable("id") long id, @RequestBody NinjaModel ninja) {
+        return ninjaService.alterar(id, ninja);
     }
 
-    @DeleteMapping("/deletar")
-    public String deletar() {
-        return "Deletar o ninja";
+    @DeleteMapping("/deletar/{id}")
+    public Boolean deletar(@PathVariable("id") long id) {
+        boolean deletado = ninjaService.deletar(id);
+        return deletado;
     }
-
 }
