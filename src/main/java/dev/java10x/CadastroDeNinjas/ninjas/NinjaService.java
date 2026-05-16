@@ -3,7 +3,6 @@ package dev.java10x.CadastroDeNinjas.ninjas;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NinjaService {
@@ -27,20 +26,16 @@ public class NinjaService {
     }
 
     public NinjaModel alterar(long id, NinjaModel ninja) {
-        NinjaModel ninjaEncontrado = this.buscarPorId(id);
-        if (ninjaEncontrado == null) {
+        if (ninjaRepository.existsById(id)) {
             return null;
         }
 
-        ninjaEncontrado = ninja;
-        ninjaEncontrado.setId(id);
-
-        return ninjaRepository.save(ninjaEncontrado);
+        ninja.setId(id);
+        return ninjaRepository.save(ninja);
     }
 
     public Boolean deletar(long id) {
-        NinjaModel ninjaEncontrado = this.buscarPorId(id);
-        if (ninjaEncontrado == null) {
+        if (!ninjaRepository.existsById(id)) {
             return false;
         }
 
