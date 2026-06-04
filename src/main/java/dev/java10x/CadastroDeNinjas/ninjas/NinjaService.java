@@ -8,9 +8,11 @@ import java.util.List;
 public class NinjaService {
 
     private final NinjaRepository ninjaRepository;
+    private final NinjaMapper ninjaMapper;
 
-    public NinjaService(NinjaRepository ninjaRepository) {
+    public NinjaService(NinjaRepository ninjaRepository, NinjaMapper ninjaMapper) {
         this.ninjaRepository = ninjaRepository;
+        this.ninjaMapper = ninjaMapper;
     }
 
     public List<NinjaModel> listarTodos() {
@@ -21,17 +23,20 @@ public class NinjaService {
         return ninjaRepository.findById(id).orElse(null);
     }
 
-    public NinjaModel salvar(NinjaModel ninja) {
-        return ninjaRepository.save(ninja);
+    public NinjaDTO salvar(NinjaDTO ninjaDTO) {
+        NinjaModel ninjaModel = ninjaMapper.map(ninjaDTO);
+        ninjaModel = ninjaRepository.save(ninjaModel);
+        return ninjaMapper.map(ninjaModel);
     }
 
-    public NinjaModel alterar(long id, NinjaModel ninja) {
+    public NinjaDTO alterar(long id, NinjaDTO ninjaDTO) {
         if (ninjaRepository.existsById(id)) {
             return null;
         }
 
-        ninja.setId(id);
-        return ninjaRepository.save(ninja);
+        NinjaModel ninjaModel = ninjaMapper.map(ninjaDTO);
+        ninjaModel = ninjaRepository.save(ninjaModel);
+        return ninjaMapper.map(ninjaModel);
     }
 
     public Boolean deletar(long id) {

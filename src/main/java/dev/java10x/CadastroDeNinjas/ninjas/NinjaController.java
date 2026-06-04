@@ -26,12 +26,12 @@ public class NinjaController {
     }
 
     @PostMapping("/salvar")
-    public NinjaModel salvar(@RequestBody NinjaModel ninja) {
+    public NinjaDTO salvar(@RequestBody NinjaDTO ninja) {
         return ninjaService.salvar(ninja);
     }
 
     @PutMapping("/alterar/{id}")
-    public NinjaModel alterar(@PathVariable("id") long id, @RequestBody NinjaModel ninja) {
+    public NinjaDTO alterar(@PathVariable("id") long id, @RequestBody NinjaDTO ninja) {
         return ninjaService.alterar(id, ninja);
     }
 
