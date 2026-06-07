@@ -16,12 +16,12 @@ public class NinjaController {
     }
 
     @GetMapping("/listarTodos")
-    public List<NinjaModel> listarTodos() {
+    public List<NinjaDTO> listarTodos() {
         return ninjaService.listarTodos();
     }
 
     @GetMapping("/buscarPorId/{id}")
-    public NinjaModel buscarPorId(@PathVariable("id") long id) {
+    public NinjaDTO buscarPorId(@PathVariable("id") long id) {
         return ninjaService.buscarPorId(id);
     }
 
