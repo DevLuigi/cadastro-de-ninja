@@ -15,7 +15,7 @@ public class NinjaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int idade;
+    private Integer idade;
     private String nome;
     private String rank;
 
