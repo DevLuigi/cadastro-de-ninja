@@ -1,5 +1,7 @@
 package dev.java10x.CadastroDeNinjas.ninjas;
 
+import dev.java10x.CadastroDeNinjas.exception.BusinessException;
+import dev.java10x.CadastroDeNinjas.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,10 +29,18 @@ public class NinjaService {
 
     public NinjaDTO buscarPorId(long id) {
         Optional<NinjaModel> ninja = ninjaRepository.findById(id);
-        return ninja.map(ninjaMapper::map).orElse(null);
+        return ninja.map(ninjaMapper::map)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Ninja com id " + id + " não encontrado")
+                );
     }
 
     public NinjaDTO salvar(NinjaDTO ninjaDTO) {
+        Optional<NinjaModel> ninjaEmail = ninjaRepository.findByEmail(ninjaDTO.getEmail());
+        if (ninjaEmail.isPresent()) {
+            throw new BusinessException("Esse e-mail já está em uso");
+        }
+
         NinjaModel ninjaModel = ninjaMapper.map(ninjaDTO);
         ninjaModel = ninjaRepository.save(ninjaModel);
         return ninjaMapper.map(ninjaModel);
@@ -39,7 +49,12 @@ public class NinjaService {
     public NinjaDTO alterar(long id, NinjaDTO ninjaDTO) {
         Optional<NinjaModel> ninja = ninjaRepository.findById(id);
         if (ninja.isEmpty()) {
-            return null;
+            throw new ResourceNotFoundException("Ninja com id " + id + " não encontrado");
+        }
+
+        Optional<NinjaModel> ninjaEmail = ninjaRepository.findByEmail(ninjaDTO.getEmail());
+        if (ninjaEmail.isPresent() && ninjaEmail.get().getId() != id) {
+            throw new BusinessException("Esse e-mail já está em uso");
         }
 
         NinjaModel ninjaModel = ninjaMapper.map(ninjaDTO);
@@ -52,7 +67,7 @@ public class NinjaService {
     public Boolean deletar(long id) {
         Optional<NinjaModel> ninja = ninjaRepository.findById(id);
         if (ninja.isEmpty()) {
-            return false;
+            throw new ResourceNotFoundException("Ninja com id " + id + " não encontrado");
         }
 
         ninjaRepository.deleteById(id);
