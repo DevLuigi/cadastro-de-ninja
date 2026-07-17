@@ -1,6 +1,6 @@
 package dev.java10x.CadastroDeNinjas.ninjas;
 
-import dev.java10x.CadastroDeNinjas.exception.ErrorResponse;
+import dev.java10x.CadastroDeNinjas.exception.model.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -122,7 +123,7 @@ public class NinjaController {
             )
     })
     @PostMapping("/salvar")
-    public ResponseEntity<NinjaDTO> salvar(@RequestBody NinjaDTO ninja) {
+    public ResponseEntity<NinjaDTO> salvar(@Valid @RequestBody NinjaDTO ninja) {
         NinjaDTO ninjaCriado = ninjaService.salvar(ninja);
         URI location = URI.create("/ninja/buscarPorId/" + ninjaCriado.getId());
         return ResponseEntity
@@ -175,7 +176,7 @@ public class NinjaController {
                     example = "10"
             )
             @PathVariable("id") long id,
-            @RequestBody NinjaDTO ninja
+            @Valid @RequestBody NinjaDTO ninja
     ) {
         NinjaDTO ninjaAlterado = ninjaService.alterar(id, ninja);
         return ResponseEntity.ok(ninjaAlterado);

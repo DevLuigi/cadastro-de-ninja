@@ -1,42 +1,61 @@
 package dev.java10x.CadastroDeNinjas.missoes;
 
+import dev.java10x.CadastroDeNinjas.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MissaoService {
 
     private final MissaoRepository missaoRepository;
+    private final MissaoMapper missaoMapper;
 
-    public MissaoService(MissaoRepository missaoRepository) {
+    public MissaoService(MissaoRepository missaoRepository, MissaoMapper missaoMapper) {
         this.missaoRepository = missaoRepository;
+        this.missaoMapper = missaoMapper;
     }
 
-    public List<MissaoModel> listarTodos() {
-        return missaoRepository.findAll();
+    public List<MissaoDTO> listarTodos() {
+        List<MissaoDTO> missoes = missaoRepository.findAll().stream()
+                .map(missaoMapper::map)
+                .collect(Collectors.toList());
+
+        return missoes;
     }
 
-    public MissaoModel buscarPorId(long id) {
-        return missaoRepository.findById(id).orElse(null);
+    public MissaoDTO buscarPorId(long id) {
+        Optional<MissaoModel> missao = missaoRepository.findById(id);
+        return missao.map(missaoMapper::map)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Missão com id " + id + " não encontrada")
+                );
     }
 
-    public MissaoModel salvar(MissaoModel missao) {
-        return missaoRepository.save(missao);
+    public MissaoDTO salvar(MissaoDTO missaoDTO) {
+        MissaoModel missaoModel = missaoMapper.map(missaoDTO);
+        MissaoDTO missaoSalva = missaoMapper.map(missaoRepository.save(missaoModel));
+        return missaoSalva;
     }
 
-    public MissaoModel alterar(long id, MissaoModel missao) {
-        if (!missaoRepository.existsById(id)) {
-            return null;
+    public MissaoDTO alterar(long id, MissaoDTO missaoDTO) {
+       Optional<MissaoModel> missao = missaoRepository.findById(id);
+        if (missao.isEmpty()) {
+            throw new ResourceNotFoundException("Missão com id " + id + " não encontrada");
         }
 
-        missao.setId(id);
-        return missaoRepository.save(missao);
+        MissaoModel missaoModel = missaoMapper.map(missaoDTO);
+        missaoModel.setId(id);
+        MissaoDTO missaoAlterada = missaoMapper.map(missaoRepository.save(missaoModel));
+        return missaoAlterada;
     }
 
     public Boolean deletar(long id) {
-        if (!missaoRepository.existsById(id)) {
-            return false;
+        Optional<MissaoModel> missao = missaoRepository.findById(id);
+        if (missao.isEmpty()) {
+            throw new ResourceNotFoundException("Missão com id " + id + " não encontrada");
         }
 
         missaoRepository.deleteById(id);

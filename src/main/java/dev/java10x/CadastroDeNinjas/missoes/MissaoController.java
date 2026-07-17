@@ -1,14 +1,18 @@
 package dev.java10x.CadastroDeNinjas.missoes;
 
-import dev.java10x.CadastroDeNinjas.exception.ErrorResponse;
+import dev.java10x.CadastroDeNinjas.exception.model.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 import java.util.List;
 
 @Tag(name = "Missões", description = "Operações para dar manutenção as missões")
@@ -35,7 +39,7 @@ public class MissaoController {
                     responseCode = "500",
                     description = "Erro interno do servidor",
                     content = @Content(
-                            mediaType = "application/json", //
+                            mediaType = "application/json", // Informando que o tipo de conteúdo será um JSON
                             schema = @Schema(
                                     implementation = ErrorResponse.class
                             )
@@ -43,8 +47,9 @@ public class MissaoController {
             )
     })
     @GetMapping("/listarTodos")
-    public ResponseEntity<List<MissaoModel>> listarTodos() {
-        return ResponseEntity.ok(missaoService.listarTodos());
+    public ResponseEntity<List<MissaoDTO>> listarTodos() {
+        List<MissaoDTO> missoes = missaoService.listarTodos();
+        return ResponseEntity.ok(missoes);
     }
 
     @Operation(
@@ -72,8 +77,15 @@ public class MissaoController {
             )
     })
     @GetMapping("/buscarPorId/{id}")
-    public MissaoModel buscarPorId(@PathVariable("id") long id) {
-        return missaoService.buscarPorId(id);
+    public ResponseEntity<MissaoDTO> buscarPorId(
+            @Parameter(
+                    description = "ID do ninja",
+                    example = "10"
+            )
+            @PathVariable("id") long id
+    ) {
+        MissaoDTO missao = missaoService.buscarPorId(id);
+        return ResponseEntity.ok(missao);
     }
 
     @Operation(
@@ -105,8 +117,12 @@ public class MissaoController {
             )
     })
     @PostMapping("/salvar")
-    public MissaoModel salvar(@RequestBody MissaoModel missao) {
-        return missaoService.salvar(missao);
+    public ResponseEntity<MissaoDTO> salvar(@Valid @RequestBody MissaoDTO missao) {
+        MissaoDTO missaoCriada = missaoService.salvar(missao);
+        URI location = URI.create("/missao/buscarPorId/" + missaoCriada.getId());
+        return ResponseEntity
+                .created(location)
+                .body(missaoCriada);
     }
 
     @Operation(
@@ -147,8 +163,16 @@ public class MissaoController {
             )
     })
     @PutMapping("/alterar/{id}")
-    public MissaoModel alterar(@PathVariable("id") long id, @RequestBody MissaoModel missao) {
-        return missaoService.alterar(id, missao);
+    public ResponseEntity<MissaoDTO> alterar(
+            @Parameter(
+                    description = "ID do ninja",
+                    example = "10"
+            )
+            @PathVariable("id") long id,
+            @Valid @RequestBody MissaoDTO missao
+    ) {
+        MissaoDTO missaoAlterada = missaoService.alterar(id, missao);
+        return ResponseEntity.ok(missaoAlterada);
     }
 
     @Operation(
@@ -180,9 +204,15 @@ public class MissaoController {
             )
     })
     @DeleteMapping("/deletar/{id}")
-    public Boolean deletar(@PathVariable("id") long id) {
-        boolean deletado = missaoService.deletar(id);
-        return deletado;
+    public ResponseEntity<?> deletar(
+            @Parameter(
+                    description = "ID do ninja",
+                    example = "10"
+            )
+            @PathVariable("id") long id
+    ) {
+        missaoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
